@@ -1,10 +1,24 @@
 import './App.css';
-import React, { useContext, useReducer, useState } from 'react'
+import React, { useContext, useEffect, useRef, useReducer, useState } from 'react'
 
 const Context = React.createContext()
 
+function useEffectOnce(cb) {
+  const didRun = useRef(false)
+
+  useEffect(() => {
+    if (!didRun.current) {
+      cb()
+      didRun.current = true
+    }
+  })
+}
+
 function appReducer(state, action) {
   switch (action.type) {
+    case 'reset': {
+      return action.payload?.data
+    }
     case 'add': {
       return [
         ...state,
@@ -15,11 +29,11 @@ function appReducer(state, action) {
       ]
     }
     case 'delete': {
-      return state.filter(item => item.id !== action.payload.id)
+      return state.filter(item => item.id !== action.payload?.id)
     }
     case 'complete': {
       return state.map(item => {
-        if (item.id === action.payload.id) {
+        if (item.id === action.payload?.id) {
           return { ...item, completed: !item.completed }
         }
         return item
@@ -32,6 +46,16 @@ function appReducer(state, action) {
 function TodoApp() {
   const [text, setText] = useState('')
   const [state, dispatch] = useReducer(appReducer, [])
+
+  useEffectOnce(() => {
+    const rawData = localStorage.getItem('data')
+    dispatch({ type: 'reset', payload: { data: rawData ? JSON.parse(rawData) : [] } })
+  })
+
+  useEffect(() => {
+    localStorage.setItem('data', JSON.stringify(state))
+  }, [state])
+
   return (
     <main>
       <Context.Provider value={dispatch}>
