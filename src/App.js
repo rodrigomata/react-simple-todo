@@ -25,8 +25,7 @@ function appReducer(state, action) {
         return item
       })
     }
-    default:
-      return [state]
+    default: return state
   }
 }
 
@@ -38,7 +37,7 @@ function TodoApp() {
       <Context.Provider value={dispatch}>
         <h1 className="title">Todo list app</h1>
         <input type="text" value={text} onChange={e => setText(e.target.value)} />
-        <button onClick={() => dispatch({ type: 'add', payload: { text } })}>Add</button>
+        <button onClick={() => {dispatch({ type: 'add', payload: { text } }); setText('')}}>Add</button>
         <TodoList items={state} />
       </Context.Provider>
     </main>
@@ -53,12 +52,12 @@ function TodoList({ items }) {
   )
 }
 
-function TodoItem({ id, text }) {
+function TodoItem({ id, text, completed }) {
   const dispatch = useContext(Context)
   return (
     <li className="item">
-      <input type="checkbox" onChange={() => dispatch({ type: 'complete', payload: { id } })} />
-      <span>{text}</span>
+      <input type="checkbox" checked={completed} onChange={() => dispatch({ type: 'complete', payload: { id } })} />
+      <span className={completed ? 'checked' : ''}>{text}</span>
       <button onClick={() => dispatch({ type: 'delete', payload: { id } })}>Delete</button>
     </li>
   )

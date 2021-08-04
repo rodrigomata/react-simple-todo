@@ -23,3 +23,14 @@ main {
 .title {
   font-size: 2.5rem;
 }
+.list {
+  width: 20rem;
+}
+.item {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+.checked {
+  text-decoration: line-through;
+}
